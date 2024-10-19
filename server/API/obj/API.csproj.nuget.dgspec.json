@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Work Place\\Coding C#\\DatingApp\\server\\API\\API.csproj": {}
+    "D:\\Work Place\\Coding dotNet\\DatingApp\\server\\API\\API.csproj": {}
   },
   "projects": {
-    "D:\\Work Place\\Coding C#\\DatingApp\\server\\API\\API.csproj": {
+    "D:\\Work Place\\Coding dotNet\\DatingApp\\server\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Work Place\\Coding C#\\DatingApp\\server\\API\\API.csproj",
+        "projectUniqueName": "D:\\Work Place\\Coding dotNet\\DatingApp\\server\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "D:\\Work Place\\Coding C#\\DatingApp\\server\\API\\API.csproj",
+        "projectPath": "D:\\Work Place\\Coding dotNet\\DatingApp\\server\\API\\API.csproj",
         "packagesPath": "C:\\Users\\asim\\.nuget\\packages\\",
-        "outputPath": "D:\\Work Place\\Coding C#\\DatingApp\\server\\API\\obj\\",
+        "outputPath": "D:\\Work Place\\Coding dotNet\\DatingApp\\server\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\asim\\AppData\\Roaming\\NuGet\\NuGet.Config",
