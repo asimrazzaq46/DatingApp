@@ -1,30 +1,15 @@
-using API.Data;
-using Microsoft.EntityFrameworkCore;
+using API.Extensions;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-builder.Services.AddCors(options =>
-     {
-         // this defines a CORS policy called "default"
-         options.AddPolicy("default", policy =>
-         {
-             options.AddPolicy("CorsPolicy",
-              builder => builder.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              );
-         });
-     });
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
 
 
-builder.Services.AddDbContext<DataContext>(opt =>
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
+// Adding JWT BEARER token into our services
 
 
 var app = builder.Build();
@@ -32,6 +17,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
