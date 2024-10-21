@@ -1,0 +1,27 @@
+<h4>Internal Server Error</h4>
+
+@if(error){
+<h5 class="text-danger">Error: {{ error.message }}</h5>
+<p class="fw-bold">
+  Note: if you are seeing this error
+  <span style="font-weight: bolder; font-size: 20px; color: brown">RUN...</span>
+</p>
+<p style="font-style: italic" class="lead text-info">What to do next?</p>
+
+<ol>
+  <li>check your internet</li>
+  <li>open chrome dev tool</li>
+  <li>Examine the url of failing request</li>
+  <li>
+    Reproduce the error in postman - if you can reproduce it, than the error is
+    by faulty API
+  </li>
+</ol>
+<p class="fw-bold">
+  Follow the stack trace - check the first two lines this tell you exactly which
+  line of code caused the problem
+</p>
+<code class="mt-5" style="background-color: whitesmoke">{{
+  error.details
+}}</code>
+}
