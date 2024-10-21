@@ -2,7 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavComponent } from './nav/nav.component';
 import { AccountService } from './_services/account.service';
-import { HomeComponent } from "./home/home.component";
+import { HomeComponent } from './home/home.component';
+
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ import { HomeComponent } from "./home/home.component";
 export class AppComponent implements OnInit {
   auth = inject(AccountService);
 
+
   ngOnInit(): void {
     this.setCurrentUser();
   }
@@ -24,6 +26,4 @@ export class AppComponent implements OnInit {
     const user = JSON.parse(userString);
     this.auth.currentUser.set(user);
   }
-
-
 }
