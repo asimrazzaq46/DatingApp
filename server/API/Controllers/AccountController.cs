@@ -20,23 +20,26 @@ public class AccountController(DataContext _context, ITokenService tokenService)
         // Checking if the user is already exist
         if (await UserExist(data.Username)) return BadRequest("UserName is already taken.");
 
+        return Ok();
+
+
         // creating a method to hash passwords
-        using var hmac = new HMACSHA512();
+        // using var hmac = new HMACSHA512();
 
-        var user = new AppUser
-        {
-            UserName = data.Username.ToLower(),
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data.Password)),
-            PasswordSalt = hmac.Key
-        };
+        // var user = new AppUser
+        // {
+        //     UserName = data.Username.ToLower(),
+        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data.Password)),
+        //     PasswordSalt = hmac.Key
+        // };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return new UserDto
-        {
-            Username = user.UserName,
-            Token = tokenService.CreateToken(user)
-        };
+        // _context.Users.Add(user);
+        // await _context.SaveChangesAsync();
+        // return new UserDto
+        // {
+        //     Username = user.UserName,
+        //     Token = tokenService.CreateToken(user)
+        // };
 
     }
 

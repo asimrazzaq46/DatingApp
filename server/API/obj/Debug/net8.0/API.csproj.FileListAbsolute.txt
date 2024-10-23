@@ -265,3 +265,5 @@ D:\Work Place\Coding dotNet\DatingApp\server\API\bin\Debug\net8.0\System.Identit
 D:\Work Place\Coding dotNet\DatingApp\server\API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\Work Place\Coding dotNet\DatingApp\server\API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
 D:\Work Place\Coding dotNet\DatingApp\server\API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\Work Place\Coding dotNet\DatingApp\server\API\bin\Debug\net8.0\Data\UserSeedData.json
+D:\Work Place\Coding dotNet\DatingApp\server\API\bin\Debug\net8.0\AutoMapper.dll
