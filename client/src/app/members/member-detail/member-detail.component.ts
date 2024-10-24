@@ -3,7 +3,7 @@ import { MembersService } from '../../_services/members.service';
 import { Member } from '../../_models/Member.model';
 import { ActivatedRoute } from '@angular/router';
 import { TabsModule } from 'ngx-bootstrap/tabs';
-import { GalleryModule, GalleryItem,ImageItem } from 'ng-gallery';
+import { GalleryModule, GalleryItem, ImageItem } from 'ng-gallery';
 
 @Component({
   selector: 'app-member-detail',
@@ -31,10 +31,7 @@ export class MemberDetailComponent implements OnInit {
           this.member = res;
           res.photos.map((image) => {
             this.images.push(
-              new ImageItem({
-                src: image.url,
-                thumb: image.url,
-              })
+              new ImageItem({ src: image.url, thumb: image.url })
             );
           });
         }

@@ -8,21 +8,27 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
-import { GalleryModule } from 'ng-gallery';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { errorInterceptor } from './_interceptors/error.interceptor';
 import { jwtTokenInterceptor } from './_interceptors/jwt-token.interceptor';
+import { loadingInterceptor } from './_interceptors/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([errorInterceptor, jwtTokenInterceptor])
+      withInterceptors([
+        errorInterceptor,
+        jwtTokenInterceptor,
+        loadingInterceptor,
+      ])
     ),
     provideAnimations(),
     provideToastr({
       positionClass: 'toast-bottom-right',
     }),
+    importProvidersFrom(NgxSpinnerModule),
   ],
 };

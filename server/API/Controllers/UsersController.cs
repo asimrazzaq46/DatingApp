@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using API.Data;
 using API.DTOs;
 using API.Entities;
@@ -39,6 +40,22 @@ public class UsersController(IUserRepositery _userRepo, IMapper _mapper) : BaseA
         return user;
     }
 
+    [HttpPut]
+    public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
+    {
+        var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (username is null) return BadRequest("No username found in token");
 
+        var user = await _userRepo.GetUserByUserNameAsync(username);
+
+        if (user is null) return BadRequest("No user found in database");
+
+        _mapper.Map(memberUpdateDto, user);
+
+        if (await _userRepo.SaveAllAsync()) return NoContent();
+
+        return BadRequest("Failed To update the user");
+        
+    }
 
 }

@@ -17,6 +17,9 @@ public class AutoMapperProfiles : Profile
         .ForMember(dest => dest.Age, o => o.MapFrom(source => source.DateOfBirth.CalculateAge()))
         .ForMember(dest => dest.PhotoUrl, o => o.MapFrom(source => source.Photos.FirstOrDefault(p => p.IsMain)!.Url));
 
+        // while updating the source we are reciving and updating into the Models of database
+        CreateMap<MemberUpdateDto, AppUser>();
+
         CreateMap<Photo, PhotoDto>();
     }
 
