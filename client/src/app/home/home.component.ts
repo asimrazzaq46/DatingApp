@@ -1,6 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RegisterComponent } from '../register/register.component';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
@@ -9,25 +8,11 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   registerMode: boolean = false;
 
-  http = inject(HttpClient);
-  url = 'https://localhost:5001/api/users';
-  users: any = [];
-
-  ngOnInit(): void {
-    this.getUsers();
-  }
-  
   registerToggle() {
     this.registerMode = !this.registerMode;
-  }
-
-  getUsers() {
-    this.http.get(this.url).subscribe({
-      next: (res) => (this.users = res),
-    });
   }
 
   onCancel($event: boolean) {
