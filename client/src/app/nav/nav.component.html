@@ -33,6 +33,11 @@
 
     @if(auth.currentUser()){
     <div dropdown class="dropdown">
+      <img
+        class="me-2"
+        src="{{ auth.currentUser()?.photoUrl }}"
+        alt="{{ auth.currentUser()?.username }}'s' profile image"
+      />
       <a dropdownToggle class="dropdown-toggle text-light text-decoration-none"
         >Welcome {{ auth.currentUser()?.username | titlecase }}</a
       >

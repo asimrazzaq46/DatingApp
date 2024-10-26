@@ -47,7 +47,7 @@ public class AccountController(DataContext _context, ITokenService tokenService)
     [HttpPost("login")] // ==> /api/account/login
     public async Task<ActionResult<UserDto>> Login(LoginDto data)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == data.Username.ToLower());
+        var user = await _context.Users.Include("Photos").FirstOrDefaultAsync(u => u.UserName == data.Username.ToLower());
         if (user is null) return Unauthorized("Invalid Username");
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
@@ -59,10 +59,13 @@ public class AccountController(DataContext _context, ITokenService tokenService)
             if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
         }
 
+        var PhotoUrl = user.Photos.FirstOrDefault(u => u.IsMain)?.Url;
+
         return new UserDto
         {
             Username = user.UserName,
-            Token = tokenService.CreateToken(user)
+            Token = tokenService.CreateToken(user),
+            PhotoUrl = user.Photos.FirstOrDefault(u => u.IsMain)?.Url
         }; ;
 
     }
