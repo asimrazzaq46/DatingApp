@@ -9,5 +9,10 @@ public class UserDto
     [Required]
     public required string Token { get; set; }
 
+    [Required]
+    public string? KnownAs { get; set; }
+
     public string? PhotoUrl {get; set;}
+
+
 }

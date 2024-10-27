@@ -36,8 +36,16 @@
         [uploader]="uploader"
         class="card bg-opacity-50 p-5 text-center my-drop-zone"
       >
-        <i class="fa fa-upload fa-3x"></i>
-        Drop Photos here
+        <label>
+          <input
+            type="file"
+            ng2FileSelect
+            [uploader]="uploader"
+            style="opacity: 0"
+          />
+          <i class="fa fa-upload fa-3x" style="margin-top: -20px"></i>
+          <span class="row text-center">Drop Photos here</span>
+        </label>
       </div>
     </div>
 

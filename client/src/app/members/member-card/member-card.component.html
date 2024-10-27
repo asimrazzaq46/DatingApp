@@ -1,7 +1,7 @@
 <div class="card mb-4">
   <div class="card-image-wrapper">
     <img
-      [src]="members().photoUrl"
+      [src]="members().photoUrl || 'user.png'"
       class="card-img-top"
       alt="{{ members().knownAs }}"
     />

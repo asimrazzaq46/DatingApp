@@ -1,16 +1,16 @@
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(DataContext _context, ITokenService tokenService) : BaseApiController
+public class AccountController(DataContext _context, ITokenService tokenService, IMapper _mapper) : BaseApiController
 {
 
     [HttpPost("register")] // by this we can say GO to Controller and then the name we specified /api/Account/register
@@ -20,26 +20,33 @@ public class AccountController(DataContext _context, ITokenService tokenService)
         // Checking if the user is already exist
         if (await UserExist(data.Username)) return BadRequest("UserName is already taken.");
 
-        return Ok();
-
-
         // creating a method to hash passwords
-        // using var hmac = new HMACSHA512();
+        using var hmac = new HMACSHA512();
+
+        var user = _mapper.Map<AppUser>(data);
+
+        user.UserName = data.Username.ToLower();
+        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data.Password));
+        user.PasswordSalt = hmac.Key;
+
 
         // var user = new AppUser
         // {
+
         //     UserName = data.Username.ToLower(),
+        //     Gender = data.Gender,
         //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data.Password)),
         //     PasswordSalt = hmac.Key
         // };
 
-        // _context.Users.Add(user);
-        // await _context.SaveChangesAsync();
-        // return new UserDto
-        // {
-        //     Username = user.UserName,
-        //     Token = tokenService.CreateToken(user)
-        // };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return new UserDto
+        {
+            Username = user.UserName,
+            Token = tokenService.CreateToken(user),
+            KnownAs = user.KnownAs
+        };
 
     }
 
@@ -64,6 +71,7 @@ public class AccountController(DataContext _context, ITokenService tokenService)
         return new UserDto
         {
             Username = user.UserName,
+            KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(u => u.IsMain)?.Url
         }; ;

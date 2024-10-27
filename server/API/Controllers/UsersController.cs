@@ -79,6 +79,9 @@ public class UsersController(IUserRepositery _userRepo, IMapper _mapper, IPhotoS
 
         };
 
+        if (user.Photos.Count == 0) photo.IsMain = true;
+
+
         user.Photos.Add(photo);
 
         // status of 201 (CREATED) and sending the location where it gets updated 
