@@ -3,12 +3,14 @@ import { inject, Injectable, signal } from '@angular/core';
 import { User } from '../_models/User.model';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountService {
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   baseUrl = environment.apiUrl;
 
@@ -19,6 +21,7 @@ export class AccountService {
       map((user) => {
         if (user) {
           this.setCurrentUser(user);
+          console.log(`Current User: `, user);
         }
       })
     );

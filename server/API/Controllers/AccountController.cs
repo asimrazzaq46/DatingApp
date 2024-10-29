@@ -29,23 +29,14 @@ public class AccountController(DataContext _context, ITokenService tokenService,
         user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data.Password));
         user.PasswordSalt = hmac.Key;
 
-
-        // var user = new AppUser
-        // {
-
-        //     UserName = data.Username.ToLower(),
-        //     Gender = data.Gender,
-        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data.Password)),
-        //     PasswordSalt = hmac.Key
-        // };
-
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return new UserDto
         {
             Username = user.UserName,
             Token = tokenService.CreateToken(user),
-            KnownAs = user.KnownAs
+            KnownAs = user.KnownAs,
+            Gender = user.Gender
         };
 
     }
@@ -73,6 +64,7 @@ public class AccountController(DataContext _context, ITokenService tokenService,
             Username = user.UserName,
             KnownAs = user.KnownAs,
             Token = tokenService.CreateToken(user),
+            Gender = user.Gender,
             PhotoUrl = user.Photos.FirstOrDefault(u => u.IsMain)?.Url
         }; ;
 

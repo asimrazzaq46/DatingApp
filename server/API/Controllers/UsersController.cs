@@ -1,6 +1,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -19,10 +20,15 @@ public class UsersController(IUserRepositery _userRepo, IMapper _mapper, IPhotoS
     // this is how it maps _mapper.Map<NameOFDto>(Entity);
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
-        var users = await _userRepo.GetAllMembersAsync();
 
+
+        userParams.CurrentUserName = User.GetUserName();
+
+        var users = await _userRepo.GetAllMembersAsync(userParams);
+
+        Response.AddPaginationHeader(users);
 
         return Ok(users);
     }

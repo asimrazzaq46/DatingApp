@@ -39,7 +39,7 @@
         alt="{{ auth.currentUser()?.username }}'s' profile image"
       />
       <a dropdownToggle class="dropdown-toggle text-light text-decoration-none"
-        >Welcome {{ auth.currentUser()?.username | titlecase }}</a
+        >Welcome {{ auth.currentUser()?.knownAs }}</a
       >
       <div *dropdownMenu class="dropdown-menu">
         <a routerLink="member/edit" class="dropdown-item">Edit Profile</a>

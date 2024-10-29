@@ -9,6 +9,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { TimeagoModule } from 'ngx-timeago';
 
 import { errorInterceptor } from './_interceptors/error.interceptor';
 import { jwtTokenInterceptor } from './_interceptors/jwt-token.interceptor';
@@ -29,6 +30,6 @@ export const appConfig: ApplicationConfig = {
     provideToastr({
       positionClass: 'toast-bottom-right',
     }),
-    importProvidersFrom(NgxSpinnerModule),
+    importProvidersFrom(NgxSpinnerModule, TimeagoModule.forRoot()),
   ],
 };

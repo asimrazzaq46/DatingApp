@@ -2,6 +2,7 @@ using System;
 using API.Controllers;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -13,8 +14,7 @@ public class UserRepositery(DataContext _context, IMapper _mapper) : IUserReposi
 {
     public async Task<AppUser?> GetUserByIdAsync(int id)
     {
-        return await _context.Users.Include(x => x.Photos)
-        .FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Users.FindAsync(id);
     }
 
     public async Task<AppUser?> GetUserByUserNameAsync(string username)
@@ -39,13 +39,30 @@ public class UserRepositery(DataContext _context, IMapper _mapper) : IUserReposi
         _context.Entry(user).State = EntityState.Modified;
     }
 
-    public async Task<IEnumerable<MemberDto>> GetAllMembersAsync()
+    public async Task<PagedList<MemberDto>> GetAllMembersAsync(UserParams userParams)
     {
-        return await _context.Users
-        .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-        .ToListAsync();
+        var query = _context.Users.AsQueryable();
+        query = query.Where(u => u.UserName != userParams.CurrentUserName);
+
+        if (userParams.Gender is not null)
+        {
+            query = query.Where(u => u.Gender == userParams.Gender);
+        }
+
+        var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
+        var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
+
+        query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+
+        query = userParams.Orderby switch
+        {
+            "created" => query.OrderByDescending(x => x.Created),
+            _ => query.OrderByDescending(x => x.LastActive)
+        };
+
+        return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider), userParams.PageNumber, userParams.PageSize);
     }
- 
+
     public async Task<MemberDto?> GetMemberByUsernamAsync(string username)
     {
         return await _context.Users
