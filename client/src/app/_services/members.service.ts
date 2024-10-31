@@ -13,6 +13,10 @@ import { Photo } from '../_models/Photo.model';
 import { PaginatedResult } from '../_models/Pagination.model';
 import { User } from '../_models/User.model';
 import { AccountService } from './account.service';
+import {
+  setPaginatedResponse,
+  setPaginationHeaders,
+} from './paginationHelpers';
 
 @Injectable({
   providedIn: 'root',
@@ -31,11 +35,13 @@ export class MembersService {
   }
 
   getMembers() {
-    const response = this.memberCache.get(Object.values(this.userPrams()).join(' - '));
+    const response = this.memberCache.get(
+      Object.values(this.userPrams()).join(' - ')
+    );
     //caching filters and results
-    if (response) return this.setPaginatedResponse(response); // getting the cache
+    if (response) return setPaginatedResponse(response, this.paginatedResult); // getting the cache
 
-    let params = this.setPaginationHeaders(
+    let params = setPaginationHeaders(
       this.userPrams().pageNumber,
       this.userPrams().pageSize
     );
@@ -49,27 +55,13 @@ export class MembersService {
       .get<Member[]>(this.baseurl + 'users', { observe: 'response', params })
       .subscribe({
         next: (res) => {
-          this.setPaginatedResponse(res);
-          this.memberCache.set(Object.values(this.userPrams()).join(' - '), res); // setting the cache
+          setPaginatedResponse(res, this.paginatedResult);
+          this.memberCache.set(
+            Object.values(this.userPrams()).join(' - '),
+            res
+          ); // setting the cache
         },
       });
-  }
-
-  private setPaginatedResponse(response: HttpResponse<Member[]>) {
-    this.paginatedResult.set({
-      items: response.body as Member[],
-      pagination: JSON.parse(response.headers.get('Pagination')!),
-    });
-  }
-
-  private setPaginationHeaders(pageNumber: number, pageSize: number) {
-    let params = new HttpParams();
-    if (pageNumber && pageSize) {
-      params = params.append('pageNumber', pageNumber);
-      params = params.append('pageSize', pageSize);
-    }
-
-    return params;
   }
 
   getMember(username: string) {
