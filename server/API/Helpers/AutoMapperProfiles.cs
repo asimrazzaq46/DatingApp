@@ -22,7 +22,13 @@ public class AutoMapperProfiles : Profile
 
         CreateMap<Photo, PhotoDto>();
         CreateMap<RegisterDto, AppUser>();
-        CreateMap<string,DateOnly>().ConvertUsing(s=>DateOnly.Parse(s));
+        CreateMap<string, DateOnly>().ConvertUsing(s => DateOnly.Parse(s));
+
+        CreateMap<Message, MessageDto>()
+        .ForMember(dest => dest.SenderPhotoUrl, o =>
+        o.MapFrom(source => source.Sender.Photos.FirstOrDefault(u => u.IsMain)!.Url))
+        .ForMember(dest => dest.RecipentPhotoUrl, o =>
+        o.MapFrom(source => source.Recipent.Photos.FirstOrDefault(u => u.IsMain)!.Url));
 
     }
 

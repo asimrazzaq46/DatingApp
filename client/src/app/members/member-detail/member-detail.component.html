@@ -1,4 +1,3 @@
-@if(member){
 <div class="row">
   <div class="col-4">
     <div class="card">
@@ -28,15 +27,20 @@
       <div class="footer">
         <div class="btn-group d-flex">
           <button class="btn btn-primary">Like</button>
-          <button class="btn btn-success">Message</button>
+          <button class="btn btn-success" (click)="selectTab('Messages')">
+            Message
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="col-8">
-    <tabset class="member-tabset">
-      <tab heading="About {{ member.knownAs }}">
+    <tabset class="member-tabset" #membersTab>
+      <tab
+        heading="About {{ member.knownAs }}"
+        (selectTab)="onTabActivated($event)"
+      >
         <h4>Decription</h4>
         <p>{{ member.introduction }}</p>
         <h4>Looking For</h4>
@@ -46,7 +50,11 @@
         <h4>Interests</h4>
         <p>{{ member.intrests }}</p>
       </tab>
-      <tab heading="Photos" #photoTab="tab">
+      <tab
+        heading="Photos"
+        #photoTab="tab"
+        (selectTab)="onTabActivated($event)"
+      >
         @if(photoTab.active){
         <gallery
           counter
@@ -56,10 +64,13 @@
         />
         }
       </tab>
-      <tab heading="Messages">
-        <p>Message functionality comming soon...</p>
+      <tab heading="Messages" (selectTab)="onTabActivated($event)">
+        <app-member-messages
+        (updateMessages)="onUpdateMessages($event)"
+          [username]="member.userName"
+          [messages]="messages()"
+        />
       </tab>
     </tabset>
   </div>
 </div>
-}
