@@ -21,14 +21,16 @@ public class MessagesController(IMessageRepositery _messageRepositery,
         if (username == createMessageDto.RecipentUserName.ToLower()) return BadRequest("You cannot message yourself");
         var sender = await _userRepositery.GetUserByUserNameAsync(username);
         var recipient = await _userRepositery.GetUserByUserNameAsync(createMessageDto.RecipentUserName);
-        if (recipient is null || sender is null) return BadRequest("Cannot send message at this time");
+
+        if (recipient is null || sender is null || sender.UserName is null || recipient.UserName is null)
+            return BadRequest("Cannot send message at this time");
 
         var message = new Message
         {
             Sender = sender,
             Recipent = recipient,
-            SenderUsername = username,
-            RecipentUsername = createMessageDto.RecipentUserName,
+            SenderUsername = sender.UserName,
+            RecipentUsername = recipient.UserName,
             Content = createMessageDto.Content
         };
 

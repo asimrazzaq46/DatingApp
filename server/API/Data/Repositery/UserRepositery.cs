@@ -66,7 +66,7 @@ public class UserRepositery(DataContext _context, IMapper _mapper) : IUserReposi
     public async Task<MemberDto?> GetMemberByUsernamAsync(string username)
     {
         return await _context.Users
-        .Where(x => x.UserName == username)
+        .Where(x => x.UserName!.ToLower() == username.ToLower())
         .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
         .SingleOrDefaultAsync();
 

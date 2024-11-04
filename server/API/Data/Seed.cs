@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
@@ -10,10 +11,10 @@ namespace API.Data;
 public class Seed
 {
 
-    public static async Task SeedUsers(DataContext context)
+    public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
         // if there is already users in database then just return. 
-        if (await context.Users.AnyAsync()) return;
+        if (await userManager.Users.AnyAsync()) return;
 
         // if there is not any user than read the file from given path
         var userData = await File.ReadAllTextAsync("Data/UserSeedData.json");
@@ -28,22 +29,38 @@ public class Seed
         // if there is no data in json than just return
         if (users is null) return;
 
+        var roles = new List<AppRole>{
+            new() {Name="Member"},
+            new() {Name="Admin"},
+            new() {Name="Moderator"},
+        };
+
+        foreach (var role in roles)
+        {
+            await roleManager.CreateAsync(role);
+        }
+
         //iterate every user in users and add to the database
         foreach (var user in users)
         {
-            // Password salt and password hash is required property in AppUser
-            // so we are creating it for every user with same Password "Pa$$word"
 
-
-            using var hmac = new HMACSHA512();
-            user.UserName = user.UserName.ToLower();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$word"));
-            user.PasswordSalt = hmac.Key;
-
-            context.Users.Add(user);
+            user.UserName = user.UserName!.ToLower();
+            await userManager.CreateAsync(user, "Pa$$w0rd");
+            await userManager.AddToRoleAsync(user, "Member");
         }
 
-        await context.SaveChangesAsync();
+        var admin = new AppUser
+        {
+            UserName = "admin",
+            KnownAs = "admin",
+            Gender = "",
+            City = "",
+            Country = "",
+        };
+
+        await userManager.CreateAsync(admin, "Pa$$w0rd");
+        await userManager.AddToRolesAsync(admin,["Admin","Moderator"]);
+
     }
 
 }
