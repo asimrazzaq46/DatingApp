@@ -18,6 +18,7 @@ import { NgxSpinnerComponent } from 'ngx-spinner';
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
+
 })
 export class AppComponent implements OnInit {
   auth = inject(AccountService);
