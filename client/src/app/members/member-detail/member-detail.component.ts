@@ -1,7 +1,13 @@
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { MembersService } from '../../_services/members.service';
+import {
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { Member } from '../../_models/Member.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TabDirective, TabsetComponent, TabsModule } from 'ngx-bootstrap/tabs';
 import { GalleryModule, GalleryItem, ImageItem } from 'ng-gallery';
 import { TimeagoModule } from 'ngx-timeago';
@@ -10,6 +16,10 @@ import { Photo } from '../../_models/Photo.model';
 import { MemberMessagesComponent } from '../member-messages/member-messages.component';
 import { Message } from '../../_models/Message.model';
 import { MessageService } from '../../_services/message.service';
+import { PresenceService } from '../../_services/presence.service';
+import { AccountService } from '../../_services/account.service';
+import { merge } from 'rxjs';
+import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 
 @Component({
   selector: 'app-member-detail',
@@ -24,17 +34,19 @@ import { MessageService } from '../../_services/message.service';
   templateUrl: './member-detail.component.html',
   styleUrl: './member-detail.component.css',
 })
-export class MemberDetailComponent implements OnInit {
+export class MemberDetailComponent implements OnInit, OnDestroy {
   @ViewChild('membersTab', { static: true }) membersTab?: TabsetComponent;
 
-  private memberService = inject(MembersService);
+  private auth = inject(AccountService);
   private messageService = inject(MessageService);
+  presenceService = inject(PresenceService);
+
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   member: Member = {} as Member;
   images: GalleryItem[] = [];
   activeTab = signal<TabDirective | null>(null);
-  messages = signal<Message[]>([]);
 
   ngOnInit(): void {
     this.route.data.subscribe({
@@ -47,6 +59,10 @@ export class MemberDetailComponent implements OnInit {
             );
           });
       },
+    });
+
+    this.route.paramMap.subscribe({
+      next: () => this.onRouteParamsChange(),
     });
 
     this.route.queryParams.subscribe({
@@ -67,37 +83,39 @@ export class MemberDetailComponent implements OnInit {
     }
   }
 
-  onTabActivated(data: TabDirective) {
-    this.activeTab.set(data);
+  onRouteParamsChange() {
+    const user = this.auth.currentUser();
+    if (!user) return;
     if (
-      this.activeTab()?.heading === 'Messages' &&
-      this.messages.length === 0 &&
-      this.member
+      this.messageService.hubsConnection?.state ===
+        HubConnectionState.Connected &&
+      this.activeTab()?.heading === 'Messages'
     ) {
-      this.messageService.getMessageThread(this.member.userName).subscribe({
-        next: (message) => this.messages.set(message),
-      });
+      this.messageService.hubsConnection
+        .stop()
+        .then(() =>
+          this.messageService.createHubConnection(user, this.member.userName)
+        );
     }
   }
 
-  onUpdateMessages(message: Message) {
-    this.messages.update((prevMessages) => [...prevMessages, message]);
+  onTabActivated(data: TabDirective) {
+    this.activeTab.set(data);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: this.activeTab()?.heading },
+      queryParamsHandling: 'merge',
+    });
+    if (this.activeTab()?.heading === 'Messages' && this.member) {
+      const user = this.auth.currentUser();
+      if (!user) return;
+      this.messageService.createHubConnection(user, this.member.userName);
+    } else {
+      this.messageService.stopHubConnection();
+    }
   }
 
-  // loadUser() {
-  //   const username = this.route.snapshot.paramMap.get('username');
-  //   if (!username) return;
-  //   this.memberService.getMember(username).subscribe({
-  //     next: (res) => {
-  //       if (res) {
-  //         this.member = res;
-  //         res.photos.map((image: Photo) => {
-  //           this.images.push(
-  //             new ImageItem({ src: image.url, thumb: image.url })
-  //           );
-  //         });
-  //       }
-  //     },
-  //   });
-  // }
+  ngOnDestroy(): void {
+    this.messageService.stopHubConnection();
+  }
 }

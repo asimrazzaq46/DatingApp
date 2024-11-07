@@ -4,6 +4,7 @@ using API.Data.Repositery;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions;
@@ -36,9 +37,12 @@ public static class ApplicationServiceExtensions
                       builder => builder.AllowAnyOrigin()
                       .AllowAnyMethod()
                       .AllowAnyHeader()
-                      );
+                      .AllowCredentials()
+                      .WithOrigins("http://localhost:4200", "https://localhost:4200")
+                          );
                  });
              });
+
 
         services.AddScoped<IUserRepositery, UserRepositery>();
         services.AddScoped<ILikesRepositery, LikesRepositery>();
@@ -48,6 +52,8 @@ public static class ApplicationServiceExtensions
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+        services.AddSignalR();
+        services.AddSingleton<PresenceTracker>();
 
         return services;
 

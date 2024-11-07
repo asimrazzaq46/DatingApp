@@ -5,6 +5,7 @@ import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { LikesService } from './likes.service';
+import { PresenceService } from './presence.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,13 +14,14 @@ export class AccountService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private likeService = inject(LikesService);
+  private presenceService = inject(PresenceService);
 
   baseUrl = environment.apiUrl;
 
   currentUser = signal<User | null>(null);
-  roles = computed(()=>{
+  roles = computed(() => {
     const user = this.currentUser();
-    if(user && user.token){
+    if (user && user.token) {
       const role = JSON.parse(atob(user.token.split('.')[1])).role;
       return Array.isArray(role) ? role : [role];
     }
@@ -31,7 +33,6 @@ export class AccountService {
       map((user) => {
         if (user) {
           this.setCurrentUser(user);
-          console.log(`Current User: `, user);
         }
       })
     );
@@ -53,10 +54,12 @@ export class AccountService {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     this.likeService.getLikesId();
+    this.presenceService.createHubsConnection(user);
   }
 
   logout() {
     localStorage.removeItem('user');
     this.currentUser.set(null);
+    this.presenceService.stopHubConnection();
   }
 }

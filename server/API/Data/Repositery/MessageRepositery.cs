@@ -10,6 +10,11 @@ namespace API.Data.Repositery;
 
 public class MessageRepositery(DataContext _context, IMapper _mapper) : IMessageRepositery
 {
+    public void AddGroup(Group group)
+    {
+        _context.Groups.Add(group);
+    }
+
     public void AddMessage(Message message)
     {
         _context.Messages.Add(message);
@@ -20,11 +25,23 @@ public class MessageRepositery(DataContext _context, IMapper _mapper) : IMessage
         _context.Messages.Remove(message);
     }
 
+    public async Task<Connection?> GetConnection(string ConnectionId)
+    {
+        return await _context.Connections.FindAsync(ConnectionId);
+    }
+
     public async Task<Message?> GetMessage(int messageId)
     {
 
         return await _context.Messages.FindAsync(messageId);
 
+    }
+
+    public async Task<Group?> GetMessageGroup(string groupName)
+    {
+        return await _context.Groups
+        .Include(x => x.Connections)
+        .FirstOrDefaultAsync(x => x.Name == groupName);
     }
 
     public async Task<PagedList<MessageDto>> GetMessagesForUser(MessagesParams messagesParams)
@@ -59,12 +76,11 @@ public class MessageRepositery(DataContext _context, IMapper _mapper) : IMessage
           */
 
         var messages = await _context.Messages
-        .Include(u => u.Sender).ThenInclude(p => p.Photos)
-        .Include(u => u.Recipent).ThenInclude(p => p.Photos)
         .Where(x =>
         x.RecipentUsername == currentUsername && x.RecipentDeleted == false && x.SenderUsername == recipientUsername ||
         x.SenderUsername == currentUsername && x.SenderDeleted == false && x.RecipentUsername == recipientUsername)
         .OrderBy(x => x.MessageSent)
+        .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
         .ToListAsync();
 
         //getting currentusers unread message from the above query
@@ -75,7 +91,20 @@ public class MessageRepositery(DataContext _context, IMapper _mapper) : IMessage
             unreadMessages.ForEach(message => message.DateRead = DateTime.UtcNow);
             await _context.SaveChangesAsync();
         }
-        return _mapper.Map<IEnumerable<MessageDto>>(messages);
+        return messages;
+    }
+
+    public void RemoveConnection(Connection connection)
+    {
+        _context.Connections.Remove(connection);
+    }
+    public async Task<Group?> GetGroupForConnection(string ConnectionId)
+    {
+        return await _context.Groups
+        .Include(x => x.Connections)
+        .Where(x => x.Connections.Any(c => c.ConnectionId == ConnectionId))
+        .FirstOrDefaultAsync();
+
     }
 
     public async Task<bool> SaveAllAsync()
