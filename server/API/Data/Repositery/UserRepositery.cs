@@ -29,10 +29,6 @@ public class UserRepositery(DataContext _context, IMapper _mapper) : IUserReposi
         .ToListAsync();
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await _context.SaveChangesAsync() > 0;
-    }
 
     public void update(AppUser user)
     {

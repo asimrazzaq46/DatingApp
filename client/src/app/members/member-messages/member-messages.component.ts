@@ -1,4 +1,16 @@
-import { Component, inject, input, signal, ViewChild } from '@angular/core';
+import {
+  AfterContentChecked,
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  IterableDiffers,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { MessageService } from '../../_services/message.service';
 
 import { TimeagoModule } from 'ngx-timeago';
@@ -10,18 +22,37 @@ import { FormsModule, NgForm } from '@angular/forms';
   imports: [TimeagoModule, FormsModule],
   templateUrl: './member-messages.component.html',
   styleUrl: './member-messages.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MemberMessagesComponent {
+export class MemberMessagesComponent implements AfterContentChecked {
   messageService = inject(MessageService);
+  private cdref = inject(ChangeDetectorRef);
 
   username = input.required<string>();
   messageContent = signal<string>('');
 
   @ViewChild('messageForm') messageForm?: NgForm;
+  @ViewChild('scrollMe') scrollMe?: ElementRef;
 
   sendMessage() {
     this.messageService
       .sendMessage(this.username(), this.messageContent())
       .then(() => this.messageForm?.reset());
+    // this.scrollToBottom();
   }
+
+  ngAfterContentChecked(): void {
+    this.cdref.detectChanges();
+  }
+
+  // ngAfterViewChecked(): void {
+  //   this.scrollToBottom();
+  // }
+
+  // private scrollToBottom() {
+  //   if (this.scrollMe) {
+  //     this.scrollMe.nativeElement.scrollTop =
+  //       this.scrollMe.nativeElement.scrollHeight;
+  //   }
+  // }
 }

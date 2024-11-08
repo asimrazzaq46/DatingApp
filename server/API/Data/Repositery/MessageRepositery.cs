@@ -75,23 +75,21 @@ public class MessageRepositery(DataContext _context, IMapper _mapper) : IMessage
              for better understanding change currentUsername to me and recipientUsername to otherUser
           */
 
-        var messages = await _context.Messages
+        var query = _context.Messages
         .Where(x =>
         x.RecipentUsername == currentUsername && x.RecipentDeleted == false && x.SenderUsername == recipientUsername ||
         x.SenderUsername == currentUsername && x.SenderDeleted == false && x.RecipentUsername == recipientUsername)
         .OrderBy(x => x.MessageSent)
-        .ProjectTo<MessageDto>(_mapper.ConfigurationProvider)
-        .ToListAsync();
+        .AsQueryable();
 
         //getting currentusers unread message from the above query
-        var unreadMessages = messages.Where(x => x.DateRead == null && x.RecipentUsername == currentUsername).ToList();
+        var unreadMessages = query.Where(x => x.DateRead == null && x.RecipentUsername == currentUsername).ToList();
 
         if (unreadMessages.Count != 0)
         {
             unreadMessages.ForEach(message => message.DateRead = DateTime.UtcNow);
-            await _context.SaveChangesAsync();
         }
-        return messages;
+        return await query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider).ToListAsync();
     }
 
     public void RemoveConnection(Connection connection)
@@ -107,9 +105,6 @@ public class MessageRepositery(DataContext _context, IMapper _mapper) : IMessage
 
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await _context.SaveChangesAsync() > 0;
-    }
+
 }
 
