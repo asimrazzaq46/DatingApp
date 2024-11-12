@@ -13,6 +13,8 @@ public interface IUserRepositery
     Task<AppUser?> GetUserByIdAsync(int id);
     Task<AppUser?> GetUserByUserNameAsync(string username);
     Task<PagedList<MemberDto>> GetAllMembersAsync(UserParams userParams);
-    Task<MemberDto?> GetMemberByUsernamAsync(string username);
+    Task<MemberDto?> GetMemberByUsernamAsync(string username, bool isCurrentUser);
+    Task<AppUser?> GetUserByPhotoId(int photoId);
+
 
 }

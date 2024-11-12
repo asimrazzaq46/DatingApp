@@ -32,7 +32,9 @@
       </div>
       <div class="footer">
         <div class="btn-group d-flex">
-          <button class="btn btn-primary">Like</button>
+          <button class="btn btn-primary" (click)="onlike()">
+            {{ hasLiked() ? "Unlike" : "Like" }}
+          </button>
           <button class="btn btn-success" (click)="selectTab('Messages')">
             Message
           </button>

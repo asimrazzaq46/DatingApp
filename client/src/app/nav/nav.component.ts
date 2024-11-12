@@ -30,7 +30,16 @@ export class NavComponent {
   login() {
     this.auth.login(this.model).subscribe({
       next: (_) => this.router.navigateByUrl('/members'),
-      error: (err) => this.toaster.error(err.error),
+      error: (err: string[] | any) => {
+        console.log(err);
+        if (err.length > 0) {
+          err.forEach((element: string) => {
+            this.toaster.error(element);
+          });
+        } else {
+          this.toaster.error(err.error);
+        }
+      },
     });
   }
 

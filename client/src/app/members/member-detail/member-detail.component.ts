@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   inject,
   OnDestroy,
   OnInit,
@@ -20,6 +21,7 @@ import { PresenceService } from '../../_services/presence.service';
 import { AccountService } from '../../_services/account.service';
 import { merge } from 'rxjs';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
+import { LikesService } from '../../_services/likes.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -40,6 +42,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   private auth = inject(AccountService);
   private messageService = inject(MessageService);
   presenceService = inject(PresenceService);
+  private likeService = inject(LikesService);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -47,6 +50,9 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   member: Member = {} as Member;
   images: GalleryItem[] = [];
   activeTab = signal<TabDirective | null>(null);
+  hasLiked = computed(() =>
+    this.likeService.likeIds().includes(this.member.id)
+  );
 
   ngOnInit(): void {
     this.route.data.subscribe({
@@ -70,6 +76,10 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
         params['tab'] && this.selectTab(params['tab']);
       },
     });
+  }
+
+  onlike() {
+    this.likeService.onToggleLike(this.member, this.hasLiked());
   }
 
   selectTab(heading: string) {

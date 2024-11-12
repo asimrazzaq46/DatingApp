@@ -14,6 +14,7 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
 
     public DbSet<UserLike> Likes { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Photo> Photos { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Connection> Connections { get; set; }
 
@@ -62,6 +63,11 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
         .HasOne(u => u.Sender)
         .WithMany(U => U.MessagesSent)
         .OnDelete(DeleteBehavior.Restrict);
+
+        //  Returning only approved Photos
+        builder.Entity<Photo>()
+        .HasQueryFilter(p=>p.IsApproved);
+
     }
 
 }

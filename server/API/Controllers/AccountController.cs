@@ -48,6 +48,7 @@ public class AccountController(UserManager<AppUser> _userManager, ITokenService 
     [HttpPost("login")] // ==> /api/account/login
     public async Task<ActionResult<UserDto>> Login(LoginDto data)
     {
+        if(data.Username is null || data.Password is null) return BadRequest("username or password is not provided");
         var user = await _userManager.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.NormalizedUserName == data.Username.ToUpper());
 
         if (user is null || user.UserName is null) return Unauthorized("Invalid Username");

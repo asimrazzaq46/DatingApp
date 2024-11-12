@@ -8,6 +8,7 @@ import {
   inject,
   input,
   IterableDiffers,
+  OnInit,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -24,7 +25,10 @@ import { FormsModule, NgForm } from '@angular/forms';
   styleUrl: './member-messages.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MemberMessagesComponent implements AfterContentChecked {
+export class MemberMessagesComponent implements AfterContentChecked, OnInit {
+  ngOnInit(): void {
+    this.scrollToBottom();
+  }
   messageService = inject(MessageService);
   private cdref = inject(ChangeDetectorRef);
 
@@ -38,21 +42,16 @@ export class MemberMessagesComponent implements AfterContentChecked {
     this.messageService
       .sendMessage(this.username(), this.messageContent())
       .then(() => this.messageForm?.reset());
-    // this.scrollToBottom();
   }
 
   ngAfterContentChecked(): void {
     this.cdref.detectChanges();
   }
 
-  // ngAfterViewChecked(): void {
-  //   this.scrollToBottom();
-  // }
-
-  // private scrollToBottom() {
-  //   if (this.scrollMe) {
-  //     this.scrollMe.nativeElement.scrollTop =
-  //       this.scrollMe.nativeElement.scrollHeight;
-  //   }
-  // }
+  private scrollToBottom() {
+    if (this.scrollMe) {
+      this.scrollMe.nativeElement.scrollTop =
+        this.scrollMe.nativeElement.scrollHeight;
+    }
+  }
 }

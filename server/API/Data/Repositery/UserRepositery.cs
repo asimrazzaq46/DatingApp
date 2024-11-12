@@ -59,12 +59,30 @@ public class UserRepositery(DataContext _context, IMapper _mapper) : IUserReposi
         return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider), userParams.PageNumber, userParams.PageSize);
     }
 
-    public async Task<MemberDto?> GetMemberByUsernamAsync(string username)
+
+    //
+    public async Task<MemberDto?> GetMemberByUsernamAsync(string username, bool isCurrentUser)
     {
-        return await _context.Users
+        var query = _context.Users
         .Where(x => x.UserName!.ToLower() == username.ToLower())
         .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-        .SingleOrDefaultAsync();
+        .AsQueryable();
 
+        if (isCurrentUser)
+        {
+            query = query.IgnoreQueryFilters();
+        }
+
+        return await query.FirstOrDefaultAsync();
+
+    }
+
+    public async Task<AppUser?> GetUserByPhotoId(int photoId)
+    {
+        return await _context.Users
+        .Include(p=>p.Photos)
+        .IgnoreQueryFilters()
+        .Where(u=>u.Photos.Any(p=>p.Id == photoId))
+        .FirstOrDefaultAsync();
     }
 }

@@ -47,6 +47,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IUserRepositery, UserRepositery>();
         services.AddScoped<ILikesRepositery, LikesRepositery>();
         services.AddScoped<IMessageRepositery, MessageRepositery>();
+        services.AddScoped<IPhotoRepositery, PhotoRepositery>();
         services.AddScoped<IPhotoService, PhotoService>();
         services.AddScoped<LogUserActivity>();
 

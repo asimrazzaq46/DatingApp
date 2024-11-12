@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { AccountService } from '../_services/account.service';
-import { ToastrService } from 'ngx-toastr';
 import { NgIf } from '@angular/common';
 import { TextInputComponent } from '../_forms/text-input/text-input.component';
 import { DatePickerComponent } from '../_forms/date-picker/date-picker.component';
@@ -28,12 +27,11 @@ export class RegisterComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   private auth = inject(AccountService);
-  private toster = inject(ToastrService);
   private router = inject(Router);
 
   cancelRegister = output<boolean>();
 
-  validationErrors: string[] | undefined;
+  validationErrors: [] | undefined;
 
   ngOnInit(): void {
     this.initializeForm();
@@ -43,17 +41,17 @@ export class RegisterComponent implements OnInit {
   initializeForm() {
     this.registerForm = this.fb.group({
       gender: ['male'],
-      username: ['', Validators.required],
-      knownAs: ['', Validators.required],
+      username: ['lisa', Validators.required],
+      knownAs: ['lisa', Validators.required],
       dateOfBirth: ['', Validators.required],
-      city: ['', Validators.required],
-      country: ['', Validators.required],
+      city: ['milan', Validators.required],
+      country: ['italy', Validators.required],
       password: [
-        '',
+        'Pa$$w0rd',
         [Validators.minLength(4), Validators.maxLength(8), Validators.required],
       ],
       confirmPassword: [
-        '',
+        'Pa$$w0rd',
         [Validators.required, this.matchValues('password')],
       ],
     });
@@ -77,8 +75,10 @@ export class RegisterComponent implements OnInit {
     const dob = this.getDateOnly(this.registerForm.get('dateOfBirth')?.value);
     this.registerForm.value.dateOfBirth = dob;
     this.auth.register(this.registerForm.value).subscribe({
-      next: (res) => this.router.navigateByUrl('/members'),
-      error: (error) => (this.validationErrors = error),
+      next: (_) => this.router.navigateByUrl('/members'),
+      error: (error) => {
+        return (this.validationErrors = error.error);
+      },
     });
   }
 

@@ -36,11 +36,11 @@ public class UsersController(IUnitOfWork _unitOfWork, IMapper _mapper, IPhotoSer
     [HttpGet("{username}")] //   /api/users/username
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
-        var user = await _unitOfWork.UserRepositery.GetMemberByUsernamAsync(username);
+        var currentUser = User.GetUserName();
+
+        var user = await _unitOfWork.UserRepositery.GetMemberByUsernamAsync(username, isCurrentUser: currentUser == username);
 
         if (user is null) return NotFound();
-
-
         return user;
     }
 
@@ -85,9 +85,6 @@ public class UsersController(IUnitOfWork _unitOfWork, IMapper _mapper, IPhotoSer
 
         };
 
-        if (user.Photos.Count == 0) photo.IsMain = true;
-
-
         user.Photos.Add(photo);
 
         // status of 201 (CREATED) and sending the location where it gets updated 
@@ -129,7 +126,7 @@ public class UsersController(IUnitOfWork _unitOfWork, IMapper _mapper, IPhotoSer
         var user = await _unitOfWork.UserRepositery.GetUserByUserNameAsync(User.GetUserName());
         if (user is null) return BadRequest("User is not found");
 
-        var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+        var photo = await _unitOfWork.PhotoRepositery.GetPhotoById(photoId);
 
         if (photo is null || photo.IsMain) return BadRequest("this photo cannot be deleted");
         if (photo.PublicId is not null)
@@ -148,3 +145,5 @@ public class UsersController(IUnitOfWork _unitOfWork, IMapper _mapper, IPhotoSer
 
 
 }
+
+

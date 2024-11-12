@@ -39,4 +39,18 @@ export class LikesService {
       next: (id) => this.likeIds.set(id),
     });
   }
+
+  onToggleLike(members: Member, hasLiked: boolean) {
+    this.toggleLike(members.id).subscribe({
+      next: () => {
+        if (hasLiked) {
+          this.likeIds.update((prevId) =>
+            prevId.filter((x) => x !== members.id)
+          );
+        } else {
+          this.likeIds.update((prevIds) => [...prevIds, members.id]);
+        }
+      },
+    });
+  }
 }

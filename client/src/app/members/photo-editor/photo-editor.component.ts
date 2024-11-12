@@ -1,6 +1,13 @@
 import { Component, inject, input, OnInit, output } from '@angular/core';
 import { Member } from '../../_models/Member.model';
-import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
+import {
+  DecimalPipe,
+  JsonPipe,
+  NgClass,
+  NgFor,
+  NgIf,
+  NgStyle,
+} from '@angular/common';
 import { FileUploader, FileUploadModule } from 'ng2-file-upload';
 import { AccountService } from '../../_services/account.service';
 import { environment } from '../../../environments/environment';
@@ -10,7 +17,15 @@ import { MembersService } from '../../_services/members.service';
 @Component({
   selector: 'app-photo-editor',
   standalone: true,
-  imports: [NgStyle, NgIf, NgFor, NgClass, FileUploadModule, DecimalPipe],
+  imports: [
+    NgStyle,
+    NgIf,
+    NgFor,
+    NgClass,
+    FileUploadModule,
+    DecimalPipe,
+    JsonPipe,
+  ],
   templateUrl: './photo-editor.component.html',
   styleUrl: './photo-editor.component.css',
 })
@@ -27,6 +42,8 @@ export class PhotoEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeUploader();
+
+    this.member().photos.forEach((p) => console.log(p.isApproved));
   }
 
   fileOverBase($event: any) {

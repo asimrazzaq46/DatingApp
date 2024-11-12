@@ -82,6 +82,7 @@ public class MessageRepositery(DataContext _context, IMapper _mapper) : IMessage
         .OrderBy(x => x.MessageSent)
         .AsQueryable();
 
+
         //getting currentusers unread message from the above query
         var unreadMessages = query.Where(x => x.DateRead == null && x.RecipentUsername == currentUsername).ToList();
 

@@ -33,19 +33,22 @@ export class MemberCardComponent {
   );
 
   toggleLike() {
-    this.likeService.toggleLike(this.members().id).subscribe({
-      next: () => {
-        if (this.hasLiked()) {
-          this.likeService.likeIds.update((prevId) =>
-            prevId.filter((x) => x !== this.members().id)
-          );
-        } else {
-          this.likeService.likeIds.update((prevIds) => [
-            ...prevIds,
-            this.members().id,
-          ]);
-        }
-      },
-    });
+    // this.likeService.toggleLike(this.members().id).subscribe({
+    //   next: () => {
+    //     if (this.hasLiked()) {
+    //       this.likeService.likeIds.update((prevId) =>
+    //         prevId.filter((x) => x !== this.members().id)
+    //       );
+    //     } else {
+    //       this.likeService.likeIds.update((prevIds) => [
+    //         ...prevIds,
+    //         this.members().id,
+    //       ]);
+    //     }
+    //   },
+    // });
+
+
+    this.likeService.onToggleLike(this.members(),this.hasLiked())
   }
 }
